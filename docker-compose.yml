@@ -1,0 +1,22 @@
+# docker-compose.yml
+# Levanta todos los servicios con: docker-compose up --build
+
+version: '3.8'
+
+services:
+
+  kpi-service:
+    build: ./kpi-service
+    ports:
+      - "3002:3002"
+    environment:
+      PORT: 3002
+    restart: on-failure
+
+  informes-service:
+    build: ./informes-service
+    ports:
+      - "3004:3004"
+    environment:
+      PORT: 3004
+    restart: on-failure
