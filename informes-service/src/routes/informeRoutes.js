@@ -1,37 +1,53 @@
 // src/routes/informeRoutes.js
 
-// RUTAS del informes-service
-
-// Define qué URLs existen y qué función del controlador las maneja
-
-
-const express = require('express');
-const router = express.Router();
+const express    = require('express');
+const router     = express.Router();
 const {
-    getDashboard,
-    getEstadoCircuitos
+  getDashboard,
+  getEstadoCircuitos
 } = require('../controllers/informeController');
 
-
-// GET http://localhost:3004/api/informes/health
-// Para verificar que el servicio está vivo
+/**
+ * @swagger
+ * /api/informes/health:
+ *   get:
+ *     summary: Verifica que el servicio está vivo
+ *     responses:
+ *       200:
+ *         description: Servicio funcionando OK
+ */
 router.get('/health', (req, res) => {
-    res.json({
-        servicio: 'pro ando el microservicio de informes-service',
-        estado: 'Seeeeeeeeeeeeeee',
-        timestamp: new Date().toISOString()
-    });
+  res.json({
+    servicio:  'pro ando el microservicio de informes-service',
+    estado:    'Seeeeeeeeeeeeeee',
+    timestamp: new Date().toISOString()
+  });
 });
 
-
-// GET http://localhost:3004/api/informes/dashboard
-// Genera el dashboard ejecutivo completo
+/**
+ * @swagger
+ * /api/informes/dashboard:
+ *   get:
+ *     summary: Genera el dashboard ejecutivo completo
+ *     description: Llama a kpi-service y gestion-service protegido por Circuit Breaker
+ *     responses:
+ *       200:
+ *         description: Dashboard generado correctamente
+ *       500:
+ *         description: Error interno del servidor
+ */
 router.get('/dashboard', getDashboard);
 
-
-// GET http://localhost:3004/api/informes/circuitos
-// Muestra el estado de los circuit breakers (monitoreo)
+/**
+ * @swagger
+ * /api/informes/circuitos:
+ *   get:
+ *     summary: Muestra el estado de los Circuit Breakers
+ *     description: Retorna el estado CLOSED, OPEN o HALF_OPEN de cada circuito
+ *     responses:
+ *       200:
+ *         description: Estado de los circuitos
+ */
 router.get('/circuitos', getEstadoCircuitos);
-
 
 module.exports = router;
