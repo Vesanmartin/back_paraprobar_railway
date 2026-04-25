@@ -1,6 +1,4 @@
 # docker-compose.yml
-# Levanta todos los servicios con: docker-compose up --build
-
 version: '3.8'
 
 services:
@@ -19,4 +17,8 @@ services:
       - "3004:3004"
     environment:
       PORT: 3004
+      KPI_SERVICE_URL: http://kpi-service:3002
+      GESTION_SERVICE_URL: http://gestion-service:3003
+    depends_on:
+      - kpi-service
     restart: on-failure
