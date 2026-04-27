@@ -12,6 +12,7 @@ const swaggerUi     = require('swagger-ui-express');
 const swaggerSpec   = require('./config/swagger');
 const informeRoutes = require('./routes/informeRoutes');
 const chatbotRoutes = require('./routes/chatbotRoutes');
+const { publicarDatosImportados } = require('./events/publicador');
 
 const app = express();
 const PORT = process.env.PORT || 3004;
@@ -37,8 +38,18 @@ app.use((req, res) => {
     });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`Informes Service en http://localhost:${PORT}`);
     console.log(`Swagger docs en http://localhost:${PORT}/api-docs`);
     console.log(`Chatbot en POST http://localhost:${PORT}/api/informes/chat`);
+
+// Publicar evento de prueba al arrancar 👈 agregar
+    await publicarDatosImportados({
+        sucursal:  'Santiago Centro',
+        tipo:      'ventas',
+        registros: 150,
+        periodo:   new Date().toISOString()
+    });
+
+
 });

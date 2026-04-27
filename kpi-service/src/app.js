@@ -5,6 +5,7 @@ const express   = require('express');
 const swaggerUi   = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 const kpiRoutes = require('./routes/kpiRoutes');
+const { iniciarConsumidor } = require('./events/consumidor');
 
 
 const app  = express();
@@ -23,7 +24,8 @@ app.use((req, res) => {
   });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`KPI Service en http://localhost:${PORT}`);
   console.log(`Swagger docs en http://localhost:${PORT}/api-docs`);
+  await iniciarConsumidor();
 });
