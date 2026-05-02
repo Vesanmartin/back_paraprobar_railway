@@ -8,11 +8,16 @@ const {
     eliminarGestion
 } = require('../controllers/gestionController');
 
+// Obtener todos los datos
 router.get('/gestion', getGestion);
+
+// Crear un nuevo dato
 router.post('/gestion', crearGestion);
+
+// Actualizar un dato por id
 router.put('/gestion/:id', actualizarGestion);
+
+// Eliminar un dato por id
 router.delete('/gestion/:id', eliminarGestion);
-router.put('/:id', actualizarGestion);
-router.delete('/:id', eliminarGestion)
 
 module.exports = router;
