@@ -10,8 +10,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// rutas
 app.use("/api/auth", authRoutes);
 
+// ruta de prueba
 app.get("/", (req, res) => {
   res.send("Auth service funcionando");
 });
