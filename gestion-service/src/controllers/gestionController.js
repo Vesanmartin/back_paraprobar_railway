@@ -1,39 +1,44 @@
 // gestion-service/src/controllers/gestionController.js
-// Controlador de gestión de datos
-// Por ahora usa array en memoria, pendiente conectar a MySQL
+// Controlador de gestión conectado a MySQL
 
-let proyectos = [];
+const conexion = require('../db');
 
 // Obtener todos los proyectos
 const getGestion = (req, res) => {
-  res.json(proyectos);
+  conexion.query('SELECT * FROM proyectos', (err, resultados) => {
+    if (err) return res.status(500).json({ error: 'Error en la BD' });
+    res.json(resultados);
+  });
 };
 
 // Crear un nuevo proyecto
 const crearGestion = (req, res) => {
-  const nuevo = req.body;
-  proyectos.push(nuevo);
-  res.json({ mensaje: 'Proyecto creado', nuevo });
+  const { nombre, descripcion, estado } = req.body;
+  const query = 'INSERT INTO proyectos (nombre, descripcion, estado) VALUES (?, ?, ?)';
+  conexion.query(query, [nombre, descripcion, estado || 'activo'], (err, resultado) => {
+    if (err) return res.status(500).json({ error: 'Error en la BD' });
+    res.status(201).json({ mensaje: 'Proyecto creado', id: resultado.insertId });
+  });
 };
 
-// Actualizar un proyecto por índice
+// Actualizar un proyecto por id
 const actualizarGestion = (req, res) => {
-  const id = req.params.id;
-  if (!proyectos[id]) {
-    return res.status(404).json({ mensaje: 'No encontrado' });
-  }
-  proyectos[id] = req.body;
-  res.json({ mensaje: 'Proyecto actualizado' });
+  const { id } = req.params;
+  const { nombre, descripcion, estado } = req.body;
+  const query = 'UPDATE proyectos SET nombre = ?, descripcion = ?, estado = ? WHERE id = ?';
+  conexion.query(query, [nombre, descripcion, estado, id], (err) => {
+    if (err) return res.status(500).json({ error: 'Error en la BD' });
+    res.json({ mensaje: 'Proyecto actualizado' });
+  });
 };
 
-// Eliminar un proyecto por índice
+// Eliminar un proyecto por id
 const eliminarGestion = (req, res) => {
-  const id = req.params.id;
-  if (!proyectos[id]) {
-    return res.status(404).json({ mensaje: 'No encontrado' });
-  }
-  proyectos.splice(id, 1);
-  res.json({ mensaje: 'Proyecto eliminado' });
+  const { id } = req.params;
+  conexion.query('DELETE FROM proyectos WHERE id = ?', [id], (err) => {
+    if (err) return res.status(500).json({ error: 'Error en la BD' });
+    res.json({ mensaje: 'Proyecto eliminado' });
+  });
 };
 
 module.exports = {
