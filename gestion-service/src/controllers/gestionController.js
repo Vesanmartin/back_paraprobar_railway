@@ -1,43 +1,43 @@
 // gestion-service/src/controllers/gestionController.js
-// Controlador de gestión conectado a MySQL
+// Controlador de gestión de sucursales
 
 const conexion = require('../db');
 
-// Obtener todos los proyectos
+// Obtener todas las sucursales
 const getGestion = (req, res) => {
-  conexion.query('SELECT * FROM proyectos', (err, resultados) => {
+  conexion.query('SELECT * FROM sucursales', (err, resultados) => {
     if (err) return res.status(500).json({ error: 'Error en la BD' });
     res.json(resultados);
   });
 };
 
-// Crear un nuevo proyecto
+// Crear una nueva sucursal
 const crearGestion = (req, res) => {
-  const { nombre, descripcion, estado } = req.body;
-  const query = 'INSERT INTO proyectos (nombre, descripcion, estado) VALUES (?, ?, ?)';
-  conexion.query(query, [nombre, descripcion, estado || 'activo'], (err, resultado) => {
+  const { nombre, descripcion, estado, direccion, region } = req.body;
+  const query = 'INSERT INTO sucursales (nombre, descripcion, estado, direccion, region) VALUES (?, ?, ?, ?, ?)';
+  conexion.query(query, [nombre, descripcion, estado || 'activo', direccion, region], (err, resultado) => {
     if (err) return res.status(500).json({ error: 'Error en la BD' });
-    res.status(201).json({ mensaje: 'Proyecto creado', id: resultado.insertId });
+    res.status(201).json({ mensaje: 'Sucursal creada', id: resultado.insertId });
   });
 };
 
-// Actualizar un proyecto por id
+// Actualizar una sucursal por id
 const actualizarGestion = (req, res) => {
   const { id } = req.params;
-  const { nombre, descripcion, estado } = req.body;
-  const query = 'UPDATE proyectos SET nombre = ?, descripcion = ?, estado = ? WHERE id = ?';
-  conexion.query(query, [nombre, descripcion, estado, id], (err) => {
+  const { nombre, descripcion, estado, direccion, region } = req.body;
+  const query = 'UPDATE sucursales SET nombre = ?, descripcion = ?, estado = ?, direccion = ?, region = ? WHERE id = ?';
+  conexion.query(query, [nombre, descripcion, estado, direccion, region, id], (err) => {
     if (err) return res.status(500).json({ error: 'Error en la BD' });
-    res.json({ mensaje: 'Proyecto actualizado' });
+    res.json({ mensaje: 'Sucursal actualizada' });
   });
 };
 
-// Eliminar un proyecto por id
+// Eliminar una sucursal por id
 const eliminarGestion = (req, res) => {
   const { id } = req.params;
-  conexion.query('DELETE FROM proyectos WHERE id = ?', [id], (err) => {
+  conexion.query('DELETE FROM sucursales WHERE id = ?', [id], (err) => {
     if (err) return res.status(500).json({ error: 'Error en la BD' });
-    res.json({ mensaje: 'Proyecto eliminado' });
+    res.json({ mensaje: 'Sucursal eliminada' });
   });
 };
 
