@@ -1,17 +1,22 @@
-// importacion-service/src/routes/importRoutes.js
-// Rutas del servicio de importación de datos
+// src/routes/importRoutes.js
 
-const express = require('express');
+const express   = require('express');
 const enrutador = express.Router();
-const { importarDatos, getHistorial, health } = require('../controllers/importController');
+const {
+  importarCSV, subirArchivo,
+  importarDatos, listarModulos,
+  getHistorial, health
+} = require('../controllers/importController');
 
-// Importar datos desde una fuente (ERP, CRM, POS)
-enrutador.post('/datos', importarDatos);
+// Flujo 1 — importación automática simulada
+enrutador.post('/datos',    importarDatos);
 
-// Historial de importaciones guardadas en BD
+// Flujo 2 — importación manual CSV real
+enrutador.post('/csv',      subirArchivo, importarCSV);
+
+// Utilidades
+enrutador.get('/modulos',   listarModulos);
 enrutador.get('/historial', getHistorial);
-
-// Health check
-enrutador.get('/health', health);
+enrutador.get('/health',    health);
 
 module.exports = enrutador;
