@@ -9,11 +9,15 @@ provider:
   environment:
     NODE_ENV: development
 
+custom:
+  serverless-offline:
+    httpPort: 4000
+    lambdaPort: 4002
+
 plugins:
   - serverless-offline
 
 functions:
-
   generarReporte:
     handler: src/handlers/generarReporte.handler
     events:
@@ -28,4 +32,12 @@ functions:
       - http:
           path: /reportes/mensual
           method: get
+          cors: true
+
+  importarAutomatico:
+    handler: src/handlers/importarAutomatico.handler
+    events:
+      - http:
+          path: /importar-automatico
+          method: post
           cors: true
