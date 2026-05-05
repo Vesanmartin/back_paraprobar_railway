@@ -23,7 +23,7 @@ const limitadorGeneral = rateLimit({
 // Limite específico para rutas de autenticación (más estricto): Evita ataques de fuerza bruta.
 const limitadorLogin = rateLimit({
     windowMs: 15*60*1000, // 15 minutos
-    max: 5, // máximo 5 intentos por IP
+    max: 100, // máximo 100 intentos por IP
     message: {
         error: 'Demasiados intentos de inicio de sesión',
         detalle: 'Has excedido el límite de 5 intentos de inicio de sesión por 15 minutos. Intenta nuevamente más tarde.'

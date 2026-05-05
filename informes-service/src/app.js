@@ -15,6 +15,9 @@ const chatbotRoutes = require('./routes/chatbotRoutes');
 const { publicarDatosImportados } = require('./events/publicador');
 
 const app = express();
+const cors = require('cors');
+app.use(cors());
+
 const PORT = process.env.PORT || 3004;
 
 // Permite que Express entienda JSON en el body

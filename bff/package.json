@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Backend For Frontend — Grupo Cordillera",
   "main": "src/app.js",
+  "type": "commonjs",
   "scripts": {
     "start": "node src/app.js",
     "dev":   "nodemon src/app.js"

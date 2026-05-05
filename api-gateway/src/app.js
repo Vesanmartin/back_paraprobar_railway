@@ -15,16 +15,19 @@ const aplicacion = express();
 const PUERTO     = process.env.PORT || 3000;
 
 // Middlewares globales
-aplicacion.use(cors());
+aplicacion.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 aplicacion.use(morgan('dev'));
-aplicacion.use(express.json());
 aplicacion.use(limitadorGeneral);
 
 // Health check — va ANTES de los proxies
 aplicacion.get('/health', (req, res) => {
   res.json({
-    servicio:  'api-gateway',
-    estado:    'ok',
+    servicio:  'Api-Gateway',
+    estado:    'Ok',
     timestamp: new Date().toISOString(),
     uptime:    process.uptime()
   });
@@ -36,7 +39,14 @@ aplicacion.use('/api/auth/register', limitadorLogin);
 
 aplicacion.use('/api/auth', createProxyMiddleware({
   target:       process.env.AUTH_SERVICE_URL || 'http://localhost:3001',
-  changeOrigin: true
+  changeOrigin: true,
+  proxyTimeout: 10000,
+  timeout:      10000,
+  on: {
+    error: (err, req, res) => {
+      res.status(502).json({ error: 'Auth service no disponible' });
+    }
+  }
 }));
 
 // Rutas PROTEGIDAS
@@ -44,7 +54,12 @@ aplicacion.use('/api/kpis',
   verificarToken,
   createProxyMiddleware({
     target:       process.env.KPI_SERVICE_URL || 'http://localhost:3002',
-    changeOrigin: true
+    changeOrigin: true,
+    on: {
+      error: (err, req, res) => {
+        res.status(502).json({ error: 'KPI service no disponible' });
+      }
+    }
   })
 );
 
@@ -52,7 +67,12 @@ aplicacion.use('/api/gestion',
   verificarToken,
   createProxyMiddleware({
     target:       process.env.GESTION_SERVICE_URL || 'http://localhost:3003',
-    changeOrigin: true
+    changeOrigin: true,
+    on: {
+      error: (err, req, res) => {
+        res.status(502).json({ error: 'Gestion service no disponible' });
+      }
+    }
   })
 );
 
@@ -61,7 +81,12 @@ aplicacion.use('/api/informes',
   verificarRol('admin', 'gerente'),
   createProxyMiddleware({
     target:       process.env.INFORMES_SERVICE_URL || 'http://localhost:3004',
-    changeOrigin: true
+    changeOrigin: true,
+    on: {
+      error: (err, req, res) => {
+        res.status(502).json({ error: 'Informes service no disponible' });
+      }
+    }
   })
 );
 
