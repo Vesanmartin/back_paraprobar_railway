@@ -1,20 +1,13 @@
 // src/controllers/chatbotController.js
 
-
-// CONTROLADOR: Chatbot
-// Recibe el request HTTP con la pregunta del usuario,
-// llama al servicio del chatbot y devuelve la respuesta.
-
-
-const servicioChatbot = require('../services/chatbotService');
+const servicioChatbot  = require('../services/chatbotService');
+const servicioContexto = require('../services/contextoService');
 
 // POST /api/informes/chat
 const preguntar = async (req, res) => {
   try {
-    // Extraemos la pregunta y datos del body
-    const { pregunta, datos } = req.body;
+    const { pregunta } = req.body;
 
-    // Validamos que venga una pregunta
     if (!pregunta) {
       return res.status(400).json({
         success: false,
@@ -24,9 +17,11 @@ const preguntar = async (req, res) => {
 
     console.log(`Pregunta recibida: ${pregunta}`);
 
-    // Llamamos al servicio del chatbot
-    // Si no vienen datos, el chatbot responde con información general
-    const resultado = await servicioChatbot.responder(pregunta, datos || {});
+    //  datos reales de la BD antes de llamar a Ollama
+    const datos = await servicioContexto.obtenerContexto();
+
+
+    const resultado = await servicioChatbot.responder(pregunta, datos);
 
     res.json(resultado);
 
