@@ -2,28 +2,30 @@
 // Punto de entrada del servicio de gestión de datos
 
 const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const gestionRoutes = require('./src/routes/gestionRoutes');
-
-// Cargamos las variables de entorno
-dotenv.config();
-
 const app = express();
 
-app.use(cors());
+// Permite recibir JSON en el body de las peticiones
 app.use(express.json());
 
-// Rutas del servicio de gestión
-app.use('/api/gestion', gestionRoutes);
+// Importa el middleware de manejo de errores
+const errorHandler = require('./src/middlewares/error.middleware');
 
-// Ruta de prueba
+// Importa las rutas de gestion
+const gestionRoutes = require('./src/routes/gestionRoutes');
+
+// Registra las rutas bajo el prefijo /api
+app.use('/api', gestionRoutes);
+
+// Ruta raíz para verificar que el servicio está vivo
 app.get('/', (req, res) => {
-  res.send('Gestion service funcionando');
+    res.send('Gestion Service funcionando');
 });
 
-const PORT = process.env.PORT || 3006;
+// Middleware de errores va siempre al final
+app.use(errorHandler);
 
+// Puerto corregido — 3000 estaba ocupado por api-gateway
+const PORT = 3003;
 app.listen(PORT, () => {
-  console.log(`Gestion service corriendo en puerto ${PORT}`);
+    console.log(`Gestion Service corriendo en puerto ${PORT}`);
 });

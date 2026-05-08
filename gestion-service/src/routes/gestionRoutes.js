@@ -1,25 +1,34 @@
 // gestion-service/src/routes/gestionRoutes.js
-// Define las rutas del servicio de gestión
 
-const express = require('express');
-const router = express.Router();
+
+// Rutas de data maestra para gestion-service
+// Responsabilidad: exponer las tablas base que otros microservicios necesitan
+// Endpoints disponibles:
+// GET /api/productos   → lista todos los productos
+// GET /api/sucursales  → lista todas las sucursales
+// GET /api/empleados   → lista todos los empleados
+// GET /api/terceros    → lista proveedores y clientes
+
+
+
+
+const express=require('express');
+const router=express.Router();
+
+//Importa el controlador con la logica de cada entidad
 const {
-  getGestion,
-  crearGestion,
-  actualizarGestion,
-  eliminarGestion
-} = require('../controllers/gestionController');
+  getProductos,
+  getSucursales,
+  getEmpleados,
+  getTerceros
 
-// Obtener todos los registros de gestión
-router.get('/gestion', getGestion);
+} =require('../controllers/gestionController');
 
-// Crear un nuevo registro
-router.post('/gestion', crearGestion);
+//Rutas de data maestra
+//Cada ruta expone una tabla de la bbdd
+router.get('/productos',getProductos);
+router.get('/sucursales',getSucursales);
+router.get('/empleados',getEmpleados);
+router.get('/terceros',getTerceros);
 
-// Actualizar por id
-router.put('/gestion/:id', actualizarGestion);
-
-// Eliminar por id
-router.delete('/gestion/:id', eliminarGestion);
-
-module.exports = router;
+module.exports=router;
