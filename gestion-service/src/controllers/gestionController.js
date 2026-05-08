@@ -1,49 +1,41 @@
-// gestion-service/src/controllers/gestionController.js
-// Controlador de gestión de sucursales
+// src/controllers/gestionController.js
+// El controller ya no habla con la BD directamente
+// Delega esa responsabilidad al Repository
 
-const conexion = require('../db');
+const {
+    ProductoRepository,
+    SucursalRepository,
+    EmpleadoRepository,
+    TerceroRepository
+} = require('../repositories/gestionRepository');
 
-// Obtener todas las sucursales
-const getGestion = (req, res) => {
-  conexion.query('SELECT * FROM sucursales', (err, resultados) => {
-    if (err) return res.status(500).json({ error: 'Error en la BD' });
-    res.json(resultados);
-  });
+// Obtiene todos los productos usando el repositorio
+const getProductos = async (req, res) => {
+    const productos = await ProductoRepository.obtenerTodos();
+    res.json(productos);
 };
 
-// Crear una nueva sucursal
-const crearGestion = (req, res) => {
-  const { nombre, descripcion, estado, direccion, region } = req.body;
-  const query = 'INSERT INTO sucursales (nombre, descripcion, estado, direccion, region) VALUES (?, ?, ?, ?, ?)';
-  conexion.query(query, [nombre, descripcion, estado || 'activo', direccion, region], (err, resultado) => {
-    if (err) return res.status(500).json({ error: 'Error en la BD' });
-    res.status(201).json({ mensaje: 'Sucursal creada', id: resultado.insertId });
-  });
+// Obtiene todas las sucursales usando el repositorio
+const getSucursales = async (req, res) => {
+    const sucursales = await SucursalRepository.obtenerTodas();
+    res.json(sucursales);
 };
 
-// Actualizar una sucursal por id
-const actualizarGestion = (req, res) => {
-  const { id } = req.params;
-  const { nombre, descripcion, estado, direccion, region } = req.body;
-  const query = 'UPDATE sucursales SET nombre = ?, descripcion = ?, estado = ?, direccion = ?, region = ? WHERE id = ?';
-  conexion.query(query, [nombre, descripcion, estado, direccion, region, id], (err) => {
-    if (err) return res.status(500).json({ error: 'Error en la BD' });
-    res.json({ mensaje: 'Sucursal actualizada' });
-  });
+// Obtiene todos los empleados usando el repositorio
+const getEmpleados = async (req, res) => {
+    const empleados = await EmpleadoRepository.obtenerTodos();
+    res.json(empleados);
 };
 
-// Eliminar una sucursal por id
-const eliminarGestion = (req, res) => {
-  const { id } = req.params;
-  conexion.query('DELETE FROM sucursales WHERE id = ?', [id], (err) => {
-    if (err) return res.status(500).json({ error: 'Error en la BD' });
-    res.json({ mensaje: 'Sucursal eliminada' });
-  });
+// Obtiene todos los terceros usando el repositorio
+const getTerceros = async (req, res) => {
+    const terceros = await TerceroRepository.obtenerTodos();
+    res.json(terceros);
 };
 
 module.exports = {
-  getGestion,
-  crearGestion,
-  actualizarGestion,
-  eliminarGestion
+    getProductos,
+    getSucursales,
+    getEmpleados,
+    getTerceros
 };
