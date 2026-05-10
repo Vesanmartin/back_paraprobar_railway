@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
   res.send('Importacion service funcionando');
 });
 
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 3006;
 
 app.listen(PORT, () => {
   console.log(`Importacion service corriendo en puerto ${PORT}`);

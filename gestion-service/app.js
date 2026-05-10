@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 // Middleware de errores va siempre al final
 app.use(errorHandler);
 
-// Puerto corregido — 3000 estaba ocupado por api-gateway
+// Puerto
 const PORT = 3003;
 app.listen(PORT, () => {
     console.log(`Gestion Service corriendo en puerto ${PORT}`);
