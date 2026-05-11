@@ -51,9 +51,14 @@ const obtenerTipos = (req, res) => {
 };
 
 // GET /api/kpis/historial
-// Retorna todos los KPIs calculados guardados en BD
+// Retorna KPIs de los últimos 2 meses
 const getHistorial = (req, res) => {
-  conexion.query('SELECT * FROM kpi_resultados ORDER BY created_at DESC', (err, resultados) => {
+  const query = `
+    SELECT * FROM kpi_resultados 
+    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 2 MONTH)
+    ORDER BY created_at DESC
+  `;
+  conexion.query(query, (err, resultados) => {
     if (err) return res.status(500).json({ error: 'Error en la BD' });
     res.json(resultados);
   });

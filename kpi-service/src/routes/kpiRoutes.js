@@ -77,17 +77,35 @@ router.get('/dashboard', (req, res) => {
   const conexion = require('../config/database');
   const FabricaKPI = require('../patterns/kpiFactory');
 
-  // Consulta 1 — datos para KPI de ventas
-  const queryVentas = 'SELECT total as amount, sucursal FROM transacciones_erp';
+// Filtro dinámico: últimos 2 meses con data real en la BD
+  const filtroFecha = `(año * 12 + mes) >= (
+  SELECT año * 12 + mes FROM transacciones_erp 
+  ORDER BY año DESC, mes DESC LIMIT 1
+) - 1`;
+
+
+ // Consulta 1 — datos para KPI de ventas
+  const queryVentas = `SELECT total as amount, sucursal FROM transacciones_erp WHERE ${filtroFecha}`;
+
 
   // Consulta 2 — datos para KPI de rentabilidad
-  const queryRentabilidad = 'SELECT subtotal as revenue, iva as cost, sucursal FROM transacciones_erp';
+  const queryRentabilidad = `
+  SELECT 
+    SUM(CASE WHEN tipo = 'venta'  THEN total ELSE 0 END) as revenue,
+    SUM(CASE WHEN tipo = 'compra' THEN total ELSE 0 END) as cost
+  FROM transacciones_erp 
+  WHERE ${filtroFecha}`;
+
 
   // Consulta 3 — ventas por año para tendencias
-  const queryTendencias = 'SELECT año_importacion as periodo, SUM(total) as ventas FROM transacciones_erp GROUP BY año_importacion ORDER BY año_importacion ASC';
+  const queryTendencias = `SELECT año_importacion as periodo, SUM(total) as ventas FROM transacciones_erp 
+    WHERE ${filtroFecha} GROUP BY año_importacion ORDER BY año_importacion ASC`;
+
 
   // Consulta 4 — top categorias
-  const queryCategorias = 'SELECT categoria, COUNT(*) as cantidad, SUM(total) as total FROM transacciones_erp GROUP BY categoria ORDER BY total DESC LIMIT 5';
+  const queryCategorias = `SELECT categoria, COUNT(*) as cantidad, SUM(total) as total FROM transacciones_erp 
+    WHERE ${filtroFecha} GROUP BY categoria ORDER BY total DESC LIMIT 5`;
+
 
   // Ejecutamos todas las consultas en paralelo
   conexion.query(queryVentas, (err, dataVentas) => {
@@ -106,8 +124,11 @@ router.get('/dashboard', (req, res) => {
             // Usamos Factory Method para calcular cada KPI
             const kpiVentas = FabricaKPI.crear('ventas').calculate(dataVentas.map(d => ({ amount: parseFloat(d.amount) || 0, sucursal: d.sucursal }))
 );
-            const kpiRentabilidad = FabricaKPI.crear('rentabilidad').calculate(dataRentabilidad.map(d => ({ revenue: parseFloat(d.revenue) || 0, cost: parseFloat(d.cost) || 0 }))
-);
+            const kpiRentabilidad = FabricaKPI.crear('rentabilidad').calculate([{
+                revenue: parseFloat(dataRentabilidad[0]?.revenue) || 0,
+                cost:    parseFloat(dataRentabilidad[0]?.cost)    || 0
+            }]);  
+
             const kpiTendencias   = dataTendencias.length > 1
               ? FabricaKPI.crear('tendencias').calculate(dataTendencias.map(d => ({
                   periodo: String(d.periodo),
