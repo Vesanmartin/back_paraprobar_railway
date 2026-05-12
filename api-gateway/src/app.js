@@ -16,7 +16,7 @@ const PUERTO     = process.env.PORT || 3000;
 
 // Middlewares globales
 aplicacion.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -111,6 +111,23 @@ aplicacion.use('/api/importacion',
 );
 
 
+// Alias /api/import → importacion-service
+aplicacion.use('/api/import',
+  verificarToken,
+  verificarRol('operador', 'supersaiyajin'),
+  createProxyMiddleware({
+    target: process.env.IMPORTACION_SERVICE_URL || 'http://importacion-service:3003',
+    changeOrigin: true,
+    on: {
+      error: (err, req, res) => {
+        res.status(502).json({ error: 'Importacion service no disponible' });
+      }
+    }
+  })
+);
+
+
+
 // Ruta no encontrada
 aplicacion.use((req, res) => {
   res.status(404).json({
@@ -126,6 +143,7 @@ aplicacion.listen(PUERTO, () => {
   console.log(`  *    /api/gestion/*        : gestion-service:3003 [admin, operador, supersaiyajin]`);
   console.log(`  *    /api/informes/*       : informes-service:3004 [gerente, supersaiyajin]`);
   console.log(`  *    /api/importacion/*    : importacion-service:3005 [operador, supersaiyajin]`);
+  console.log(`  *    /api/import/*         : importacion-service:3003 [operador, supersaiyajin]`);
   console.log(`  GET  /health               : estado del gateway`);
 
 });
