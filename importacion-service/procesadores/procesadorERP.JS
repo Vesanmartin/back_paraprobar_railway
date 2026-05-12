@@ -1,7 +1,7 @@
 // src/procesadores/ProcesadorERP.js
 // Procesador específico para datos ERP (transacciones compras/ventas)
 
-const ProcesadorBase = require('./ProcesadorBase');
+const ProcesadorBase = require('./procesadorBase');
 
 class ProcesadorERP extends ProcesadorBase {
   constructor() {
