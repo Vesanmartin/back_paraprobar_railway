@@ -5,7 +5,8 @@
 // y usa la IA para generar una respuesta en lenguaje natural.
 
 
-const ollama = require('ollama').default;
+const { Ollama } = require('ollama');
+const ollamaClient = new Ollama({ host: 'http://host.docker.internal:11434' });
 
 class ServicioChatbot {
 
@@ -18,7 +19,7 @@ class ServicioChatbot {
       const contexto = this._construirContexto(datos);
 
       // Enviamos la pregunta + contexto a Ollama
-      const resultado = await ollama.chat({
+      const resultado = await ollamaClient.chat({
         model: 'llama3.2',
         messages: [
           {
