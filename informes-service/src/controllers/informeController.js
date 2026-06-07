@@ -73,4 +73,16 @@ const getDatosDashboard = async (req, res) => {
   }
 };
 
-module.exports = { getDashboard, getEstadoCircuitos, getHistorial,getDatosDashboard };
+// GET /api/informes/datos-analytics
+const getDatosAnalytics = async (req, res) => {
+  try {
+    const contextoService = require('../services/contextoService');
+    const datos = await contextoService.obtenerAnalytics();
+    res.json({ success: true, datos });
+  } catch (err) {
+    console.error('Error obteniendo analytics:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+module.exports = { getDashboard, getEstadoCircuitos, getHistorial, getDatosDashboard, getDatosAnalytics };

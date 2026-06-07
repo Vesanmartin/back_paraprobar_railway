@@ -6,7 +6,8 @@ const {
   getDashboard,
   getEstadoCircuitos,
   getHistorial,
-  getDatosDashboard
+  getDatosDashboard,
+  getDatosAnalytics
 } = require('../controllers/informeController');
 
 router.get('/health', (req, res) => {
@@ -16,6 +17,7 @@ router.get('/health', (req, res) => {
 router.get('/dashboard', getDashboard);
 router.get('/circuitos', getEstadoCircuitos);
 router.get('/historial', getHistorial);
+router.get('/datos-analytics', getDatosAnalytics);
 
 router.post('/publicar-evento', async (req, res) => {
   try {

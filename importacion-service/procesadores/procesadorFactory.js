@@ -7,6 +7,7 @@ const ProcesadorERP = require('../procesadores/procesadorERP');
 const { ProcesadorEmpleados, ProcesadorRemuneraciones, ProcesadorAsistencia } = require('../procesadores/procesadorRRHH');
 const { ProcesadorTerceros, ProcesadorInteracciones, ProcesadorProcesosVenta } = require('../procesadores/procesadorCRM');
 const ProcesadorPOS = require('../procesadores/procesadorPOS');
+const ProcesadorAnalytics = require('../procesadores/procesadorAnalytics');
 
 
 class ProcesadorFactory {
@@ -20,7 +21,8 @@ class ProcesadorFactory {
       'crm_terceros':        () => new ProcesadorTerceros(),
       'crm_interacciones':   () => new ProcesadorInteracciones(),
       'crm_procesos_venta':  () => new ProcesadorProcesosVenta(),
-      'pos_ventas':          () => new ProcesadorPOS()
+      'pos_ventas':          () => new ProcesadorPOS(),
+      'analytics_visitas': () => new ProcesadorAnalytics(),
     };
 
     const fabricar = procesadores[modulo];
@@ -41,7 +43,8 @@ class ProcesadorFactory {
       { id: 'crm_terceros',        nombre: 'CRM — Clientes/Proveedores', tabla: 'terceros_crm' },
       { id: 'crm_interacciones',   nombre: 'CRM — Interacciones',        tabla: 'interacciones_crm' },
       { id: 'crm_procesos_venta',  nombre: 'CRM — Procesos de Venta',    tabla: 'proceso_venta' },
-      { id: 'pos_ventas',          nombre: 'POS — Ventas',               tabla: 'ventas_pos' }
+      { id: 'pos_ventas',          nombre: 'POS — Ventas',               tabla: 'ventas_pos' },
+      { id: 'analytics_visitas', nombre: 'Analytics — Visitas Web', tabla: 'analytics_visitas' }
     ];
   }
 }
