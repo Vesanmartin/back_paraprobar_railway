@@ -1,5 +1,6 @@
 // auth-service/src/controllers/auth.controller.js
 import { registerUser, loginUser } from "../services/auth.service.js";
+import pool from "../db.js";
 
 // Almacén temporal por usuario (en producción sería Redis)
 const sesionesTemporales = new Map();
@@ -76,5 +77,33 @@ export const verifyCode = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });
-  }
+  } 
+};
+export const forgotPassword = async (req, res) => {
+  try {
+
+    const { email } = req.body;
+
+    const [usuarios] = await pool.query(
+      "SELECT * FROM usuarios WHERE email = ?",
+      [email]
+    );
+
+    if (usuarios.length === 0) {
+      return res.status(404).json({
+        message: "Correo no encontrado"
+      });
+    }
+
+    res.json({
+      message: "Solicitud recibida correctamente"
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Error interno"
+    });
+  } 
 };
