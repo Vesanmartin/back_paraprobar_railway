@@ -8,7 +8,9 @@ const {
   getProductos,
   getSucursales,
   getEmpleados,
-  getTerceros
+  getTerceros,
+  crearSucursal,
+  eliminarSucursal
 } = require('../controllers/gestionController');
 
 /**
@@ -32,6 +34,28 @@ router.get('/productos', getProductos);
  *         description: Lista de sucursales
  */
 router.get('/sucursales', getSucursales);
+
+/**
+ * @swagger
+ * /api/gestion/gestion:
+ *   post:
+ *     summary: Crea una nueva sucursal
+ *     responses:
+ *       201:
+ *         description: Sucursal creada
+ */
+router.post('/gestion/gestion', crearSucursal);
+
+/**
+ * @swagger
+ * /api/gestion/gestion/{id}:
+ *   delete:
+ *     summary: Elimina una sucursal
+ *     responses:
+ *       200:
+ *         description: Sucursal eliminada
+ */
+router.delete('/gestion/gestion/:id', eliminarSucursal);
 
 /**
  * @swagger

@@ -21,6 +21,20 @@ const getSucursales = async (req, res) => {
     res.json(sucursales);
 };
 
+// Crea una nueva sucursal
+const crearSucursal = async (req, res) => {
+    const { nombre, descripcion, direccion, region, estado } = req.body;
+    const sucursal = await SucursalRepository.crear({ nombre, descripcion, direccion, region, estado });
+    res.status(201).json(sucursal);
+};
+
+// Elimina una sucursal por id
+const eliminarSucursal = async (req, res) => {
+    const { id } = req.params;
+    await SucursalRepository.eliminar(id);
+    res.json({ mensaje: 'Sucursal eliminada' });
+};
+
 // Obtiene todos los empleados usando el repositorio
 const getEmpleados = async (req, res) => {
     const empleados = await EmpleadoRepository.obtenerTodos();
@@ -36,6 +50,8 @@ const getTerceros = async (req, res) => {
 module.exports = {
     getProductos,
     getSucursales,
+    crearSucursal,
+    eliminarSucursal,
     getEmpleados,
     getTerceros
 };
