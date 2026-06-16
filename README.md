@@ -1,85 +1,290 @@
 # Grupo Cordillera — Cómo levantar el sistema
-
-> Lee esto antes de preguntar por qué no funciona 😄
+# Grupo Cordillera — Sistema de Gestión Empresarial
+## Guía de instalación y ejecución
+### FullStack III — DUOC UC 2026
 
 ---
 
-## Lo que necesitas instalar en tu PC (una sola vez)
+## ¿Qué es este sistema?
 
-- **Docker Desktop** → https://www.docker.com/products/docker-desktop
-- **Node.js** (versión LTS) → https://nodejs.org
-- **Ollama** *(opcional, solo si quieres el chatbot CORDI)* → https://ollama.com
+Plataforma empresarial desarrollada con arquitectura de microservicios. 
+Incluye módulos de importación de datos, KPIs, informes, chatbot con IA (CORDI) 
+y gestión de usuarios con doble autenticación (2FA).
 
-> OJOOO: Sin Docker Desktop no funciona **nada**. Es lo primero.
 ---
-## Clonar el proyecto
 
+## Lo que necesitas instalar (una sola vez)
+
+| Herramienta | Link | Para qué sirve |
+|---|---|---|
+| Docker Desktop | https://www.docker.com/products/docker-desktop | Corre todos los microservicios |
+| Node.js LTS | https://nodejs.org | Para el frontend |
+| Git | https://git-scm.com/download/win | Para clonar el proyecto |
+| Ollama (opcional) | https://ollama.com | Solo si quieres usar el chatbot CORDI |
+
+> Sin Docker Desktop no funciona nada. Es lo primero que debes instalar.
+
+> Si usas Windows con WSL 2, asegúrate de asignar mínimo 4GB de RAM a Docker.
+> Crea el archivo `C:\Users\TuUsuario\.wslconfig` con este contenido:
+> ```
+> [wsl2]
+> memory=4GB
+> processors=2
+> ```
+> Luego ejecuta `wsl --shutdown` y reinicia Docker Desktop.
+
+---
+
+## Clonar los repositorios
+
+**Backend:**
 ```bash
 git clone -b vero21042026 https://github.com/Vesanmartin/grupocordillera_back_tercera_evaluacion.git
 cd grupocordillera_back_tercera_evaluacion
 ```
+
+**Frontend (en otra terminal):**
+```bash
+git clone https://github.com/Vesanmartin/GrupoCordillera_Front.git
+cd GrupoCordillera_Front
+```
+
+---
+
 ## Levantar el sistema
 
-### 1. Abre Docker Desktop
-Espera que el ícono de la ballena quede quieto (sin animación).
+### Paso 1 — Abre Docker Desktop
+Espera que el ícono de la ballena quede quieto (sin animación). 
+Si tienes otros proyectos Docker corriendo, deténlos primero — pueden 
+generar conflictos de puertos con este proyecto.
 
-### 2. Levanta el backend
+### Paso 2 — Levanta el backend
+
+**Primera vez (PC nuevo o después de clonar):**
 ```bash
-docker compose up -d --build
+docker compose down -v
+docker compose up -d
 ```
-Para verificar que todo quedó bien:
+El `-v` es importante la primera vez — hace que MySQL cargue 
+la base de datos automáticamente desde el archivo `sql-init/dump.sql`.
+
+**Las veces siguientes:**
+```bash
+docker compose up -d
+```
+
+**Verifica que todo quedó bien:**
 ```bash
 docker compose ps
 ```
-Todos deben decir `running` o `healthy`.
+Todos los servicios deben decir `running` o `healthy`.
+Si MySQL o RabbitMQ aparecen como `unhealthy`, espera 30 segundos y vuelve a revisar.
 
-### 3. Levanta el frontend
+### Paso 3 — Levanta el frontend
 ```bash
-cd ../grupocordillera_frontend
+cd GrupoCordillera_Front
 npm install        # solo la primera vez
 npm run dev
 ```
 Abre el navegador en: **http://localhost:5173**
 
-### 4. Chatbot CORDI (opcional)
+### Paso 4 — Chatbot CORDI (opcional)
 ```bash
 ollama run llama3.2
 ```
-> Primera vez descarga ~2GB. Déjalo corriendo en esa terminal.
+La primera vez descarga aproximadamente 2GB. 
+Déjalo corriendo en esa terminal mientras usas el sistema.
 
 ---
-## Credenciales
+
+## Credenciales de acceso
 
 | Rol | Email | Contraseña |
-|-----|-------|-----------|
+|---|---|---|
 | Super Admin | super@grupocordillera.cl | Admin1234 |
+| Admin | admin@grupocordillera.cl | (configurar) |
+| Gerente | gerente@grupocordillera.cl | (configurar) |
+| Operador | operador@grupocordillera.cl | (configurar) |
+
+> El Super Admin tiene acceso a todos los módulos del sistema.
 
 ---
-## Puertos
 
-| Servicio | Puerto |
-|----------|--------|
-| api-gateway | 3000 |
-| auth-service | 3001 |
-| kpi-service | 3002 |
-| importacion-service | 3003 |
-| informes-service | 3004 |
-| bff | 3005 |
-| gestion-service | 3006 |
-| RabbitMQ panel | 15672 (admin / admin123) |
+## Puertos del sistema
+
+| Servicio | Puerto | Descripción |
+|---|---|---|
+| Frontend | 5173 | Interfaz de usuario (Vite + React) |
+| api-gateway | 3000 | Punto de entrada de todas las peticiones |
+| auth-service | 3001 | Autenticación y 2FA |
+| kpi-service | 3002 | Indicadores de rendimiento |
+| importacion-service | 3003 | Importación de datos ERP/CRM/POS |
+| informes-service | 3004 | Informes, chatbot CORDI y analytics |
+| bff | 3005 | Backend for Frontend |
+| gestion-service | 3006 | Gestión organizacional |
+| RabbitMQ panel | 15672 | Panel de mensajería (admin / admin123) |
+
+> Si el puerto 3000 ya está ocupado por otro proyecto, el sistema no va a funcionar.
+> Verifica con: `netstat -ano | findstr :3000`
 
 ---
-## Para bajar todo
+
+## Correr pruebas unitarias
+
+Las pruebas no necesitan Docker — se corren directo con Node.
+
+**kpi-service (23 pruebas):**
+```bash
+cd kpi-service
+npm test
+```
+
+**informes-service (14 pruebas):**
+```bash
+cd informes-service
+npm test
+```
+
+**Con reporte de cobertura:**
+```bash
+npx jest --coverage
+```
+
+---
+
+## Bajar el sistema
+
+**Bajar sin borrar datos:**
 ```bash
 docker compose down
 ```
-> **Nunca uses** `docker compose down -v` — borra la base de datos.
+
+**Bajar borrando la base de datos (usar solo si quieres empezar de cero):**
+```bash
+docker compose down -v
+```
 
 ---
 
 ## Algo no funciona?
 
-1. Verifica que Docker Desktop esté abierto
-2. `docker compose ps` → revisa qué contenedor está caído
-3. `docker compose logs nombre-del-servicio` → revisa el error
-4. FIN
+**Problema: no puedo entrar con las credenciales**
+- Verifica que MySQL esté `healthy` con `docker compose ps`
+- Si es la primera vez, asegúrate de haber usado `docker compose down -v` antes del `up`
+
+**Problema: el puerto 3000 está ocupado**
+- Detén otros proyectos Docker que estén corriendo
+- Verifica con `netstat -ano | findstr :3000`
+
+**Problema: MySQL o RabbitMQ no levantan**
+- Verifica que Docker Desktop tenga mínimo 4GB de RAM asignados
+- En WSL 2, configura el archivo `.wslconfig` (ver sección de instalación)
+
+**Comandos útiles para diagnosticar:**
+```bash
+docker compose ps                          # estado de todos los servicios
+docker compose logs nombre-del-servicio    # logs de un servicio específico
+docker compose restart nombre-del-servicio # reiniciar un servicio
+```
+
+---
+
+## Estructura del proyecto
+
+## Estructura del proyecto
+
+```
+grupocordillera_back_tercera_evaluacion/
+├── api-gateway/
+│   └── src/
+│       ├── middleware/
+│       │   ├── auth.js
+│       │   └── rateLimit.js
+│       └── routes/
+├── auth-service/
+│   └── src/
+│       ├── controllers/
+│       │   └── auth.controller.js
+│       ├── middlewares/
+│       │   └── auth.middleware.js
+│       ├── models/
+│       │   └── user.model.js
+│       ├── routes/
+│       │   └── auth.routes.js
+│       ├── services/
+│       │   └── auth.service.js
+│       └── strategies/
+│           └── rolStrategy.js
+├── bff/
+│   └── src/
+│       └── routes/
+├── gestion-service/
+│   └── src/
+│       ├── config/
+│       │   └── db.js
+│       ├── controllers/
+│       │   └── gestionController.js
+│       ├── middlewares/
+│       │   ├── error.middleware.js
+│       │   └── validation.middleware.js
+│       ├── repositories/
+│       │   └── gestionRepository.js
+│       └── routes/
+│           └── gestionRoutes.js
+├── importacion-service/
+│   └── src/
+│       ├── procesadores/          ← Patrón Factory Method
+│       │   ├── procesadorBase.js
+│       │   ├── procesadorFactory.js
+│       │   ├── procesadorERP.js
+│       │   ├── procesadorCRM.js
+│       │   ├── procesadorPOS.js
+│       │   ├── procesadorRRHH.js
+│       │   └── procesadorAnalytics.js
+│       ├── repositories/
+│       │   └── importacionRepository.js
+│       ├── controllers/
+│       ├── routes/
+│       ├── services/
+│       └── uploads/
+├── kpi-service/
+│   └── src/
+│       ├── config/
+│       ├── controllers/
+│       │   └── kpiController.js
+│       ├── patterns/              ← Patrón Factory Method
+│       │   └── kpiFactory.js
+│       ├── routes/
+│       │   └── kpiRoutes.js
+│       └── test/                  ← Pruebas unitarias Jest (23 pruebas)
+│           └── kpiFactory.test.js
+├── informes-service/
+│   └── src/
+│       ├── config/
+│       ├── controllers/
+│       │   ├── chatbotController.js
+│       │   └── informeController.js
+│       ├── events/
+│       │   └── publicador.js
+│       ├── models/
+│       │   └── informeModel.js
+│       ├── patterns/              ← Patrón Circuit Breaker
+│       │   └── circuitBreaker.js
+│       ├── repositories/
+│       │   └── informeRepositories.js
+│       ├── routes/
+│       │   ├── chatbotRoutes.js
+│       │   └── informeRoutes.js
+│       ├── services/
+│       │   ├── chatbotService.js
+│       │   ├── contextoService.js
+│       │   └── informeService.js
+│       └── test/                  ← Pruebas unitarias Jest (14 pruebas)
+│           └── circuitBreaker.test.js
+├── sql-init/                      ← Dump de la base de datos (carga automática)
+│   └── dump.sql
+└── docker-compose.yml
+```
+
+
+*Desarrollado por Cocq — Gallegos — San Martín — Vásquez | DUOC UC 2026*

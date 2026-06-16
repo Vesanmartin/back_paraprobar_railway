@@ -34,7 +34,7 @@ class ContextoService {
         filtros_aplicados:     { año, mes_inicio, mes_fin }
       };
     } catch (error) {
-      console.error('Error obteniendo contexto:', error.message);
+      console.error('Error obteniendo contexto:', error);
       return {};
     }
   }
@@ -64,18 +64,21 @@ class ContextoService {
   }
 
   _resumenVentasERP(año, mes_inicio, mes_fin) {
-    const condiciones = ["tipo = 'venta'", 'año = ?'];
-    const valores = [parseInt(año)];
-    if (mes_inicio) { condiciones.push('mes >= ?'); valores.push(parseInt(mes_inicio)); }
-    if (mes_fin)    { condiciones.push('mes <= ?'); valores.push(parseInt(mes_fin)); }
-    return new Promise((resolve, reject) => {
-      conexion.query(
-        `SELECT año, mes, COUNT(*) AS cantidad_transacciones, SUM(total) AS total_ventas, SUM(cantidad) AS unidades_vendidas
-         FROM transacciones_erp WHERE ${condiciones.join(' AND ')} GROUP BY año, mes ORDER BY año DESC, mes DESC`,
-        valores, (err, r) => err ? reject(err) : resolve(r)
-      );
+  const condiciones = ["tipo = 'venta'", 'año = ?'];
+  const valores = [parseInt(año)];
+  if (mes_inicio) { condiciones.push('mes >= ?'); valores.push(parseInt(mes_inicio)); }
+  if (mes_fin)    { condiciones.push('mes <= ?'); valores.push(parseInt(mes_fin)); }
+  return new Promise((resolve, reject) => {
+    const query = `SELECT año, mes, COUNT(*) AS cantidad_transacciones, SUM(total) AS total_ventas, SUM(cantidad) AS unidades_vendidas
+                   FROM transacciones_erp WHERE ${condiciones.join(' AND ')} 
+                   GROUP BY año, mes ORDER BY año DESC, mes DESC`;
+    console.log('QUERY VENTAS:', query, valores);
+    conexion.query(query, valores, (err, r) => {
+      console.log('RESULTADO VENTAS:', err, r?.length);
+      err ? reject(err) : resolve(r);
     });
-  }
+  });
+}
 
   _topProductos(año, mes_inicio, mes_fin) {
     const condiciones = ["tipo = 'venta'", 'año = ?'];
