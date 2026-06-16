@@ -40,8 +40,13 @@ export const login = async (req, res) => {
       message: "Código enviado a su correo"
     });
   } catch (error) {
-    return res.status(401).json({ success: false, error: error.message });
-  }
+  console.error("Error login:", error);
+
+  return res.status(401).json({
+    success: false,
+    error: error.message
+  });
+}
 };
 
 // VERIFICAR CÓDIGO 2FA
