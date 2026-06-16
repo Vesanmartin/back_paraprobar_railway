@@ -190,3 +190,32 @@ docker compose restart nombre-del-servicio # reiniciar un servicio
 ---
 
 ## Estructura del proyecto
+
+## Estructura del proyecto
+
+```
+grupocordillera_back_tercera_evaluacion/
+├── api-gateway/
+├── auth-service/
+├── kpi-service/
+│   └── src/
+│       ├── controllers/
+│       ├── patterns/          ← Factory Method
+│       ├── routes/
+│       └── test/              ← pruebas unitarias Jest
+├── informes-service/
+│   └── src/
+│       ├── controllers/
+│       ├── patterns/          ← Circuit Breaker
+│       ├── routes/
+│       ├── services/          ← chatbotService, contextoService
+│       └── test/              ← pruebas unitarias Jest
+├── importacion-service/
+├── bff/
+├── gestion-service/
+├── sql-init/                  ← dump de la base de datos (carga automática)
+└── docker-compose.yml
+```
+
+
+*Desarrollado por Cocq — Gallegos — San Martín — Vásquez | DUOC UC 2026*
