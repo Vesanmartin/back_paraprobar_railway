@@ -196,24 +196,93 @@ docker compose restart nombre-del-servicio # reiniciar un servicio
 ```
 grupocordillera_back_tercera_evaluacion/
 ├── api-gateway/
+│   └── src/
+│       ├── middleware/
+│       │   ├── auth.js
+│       │   └── rateLimit.js
+│       └── routes/
 ├── auth-service/
+│   └── src/
+│       ├── controllers/
+│       │   └── auth.controller.js
+│       ├── middlewares/
+│       │   └── auth.middleware.js
+│       ├── models/
+│       │   └── user.model.js
+│       ├── routes/
+│       │   └── auth.routes.js
+│       ├── services/
+│       │   └── auth.service.js
+│       └── strategies/
+│           └── rolStrategy.js
+├── bff/
+│   └── src/
+│       └── routes/
+├── gestion-service/
+│   └── src/
+│       ├── config/
+│       │   └── db.js
+│       ├── controllers/
+│       │   └── gestionController.js
+│       ├── middlewares/
+│       │   ├── error.middleware.js
+│       │   └── validation.middleware.js
+│       ├── repositories/
+│       │   └── gestionRepository.js
+│       └── routes/
+│           └── gestionRoutes.js
+├── importacion-service/
+│   └── src/
+│       ├── procesadores/          ← Patrón Factory Method
+│       │   ├── procesadorBase.js
+│       │   ├── procesadorFactory.js
+│       │   ├── procesadorERP.js
+│       │   ├── procesadorCRM.js
+│       │   ├── procesadorPOS.js
+│       │   ├── procesadorRRHH.js
+│       │   └── procesadorAnalytics.js
+│       ├── repositories/
+│       │   └── importacionRepository.js
+│       ├── controllers/
+│       ├── routes/
+│       ├── services/
+│       └── uploads/
 ├── kpi-service/
 │   └── src/
+│       ├── config/
 │       ├── controllers/
-│       ├── patterns/          ← Factory Method
+│       │   └── kpiController.js
+│       ├── patterns/              ← Patrón Factory Method
+│       │   └── kpiFactory.js
 │       ├── routes/
-│       └── test/              ← pruebas unitarias Jest
+│       │   └── kpiRoutes.js
+│       └── test/                  ← Pruebas unitarias Jest (23 pruebas)
+│           └── kpiFactory.test.js
 ├── informes-service/
 │   └── src/
+│       ├── config/
 │       ├── controllers/
-│       ├── patterns/          ← Circuit Breaker
+│       │   ├── chatbotController.js
+│       │   └── informeController.js
+│       ├── events/
+│       │   └── publicador.js
+│       ├── models/
+│       │   └── informeModel.js
+│       ├── patterns/              ← Patrón Circuit Breaker
+│       │   └── circuitBreaker.js
+│       ├── repositories/
+│       │   └── informeRepositories.js
 │       ├── routes/
-│       ├── services/          ← chatbotService, contextoService
-│       └── test/              ← pruebas unitarias Jest
-├── importacion-service/
-├── bff/
-├── gestion-service/
-├── sql-init/                  ← dump de la base de datos (carga automática)
+│       │   ├── chatbotRoutes.js
+│       │   └── informeRoutes.js
+│       ├── services/
+│       │   ├── chatbotService.js
+│       │   ├── contextoService.js
+│       │   └── informeService.js
+│       └── test/                  ← Pruebas unitarias Jest (14 pruebas)
+│           └── circuitBreaker.test.js
+├── sql-init/                      ← Dump de la base de datos (carga automática)
+│   └── dump.sql
 └── docker-compose.yml
 ```
 
