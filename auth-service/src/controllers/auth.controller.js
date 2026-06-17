@@ -22,18 +22,21 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     // Validar usuario y obtener token
-    const token = await loginUser(email, password);
+   const resultado = await loginUser(email, password);
 
-    // Generar código 6 dígitos
-    const codigoTemporal = Math.floor(
-      100000 + Math.random() * 900000
-    ).toString();
+const codigoTemporal = Math.floor(
+  100000 + Math.random() * 900000
+).toString();
 
-    // Guardar token + código juntos por email
-    sesionesTemporales.set(email, { token, codigoTemporal });
-
-    console.log(`Código 2FA para ${email}:`, codigoTemporal);
-
+sesionesTemporales.set(email, {
+  token: resultado.token,
+  rol: resultado.rol,
+  codigoTemporal
+  
+});
+console.log("LOGIN RECIBIDO:", email);
+console.log("CODIGO GENERADO:", codigoTemporal);
+console.log("SESION:", sesionesTemporales.get(email));
     return res.status(200).json({
       success: true,
       twoFactor: true,
@@ -69,11 +72,12 @@ export const verifyCode = async (req, res) => {
       sesionesTemporales.delete(email);
 
       // Enviar el JWT
-      return res.status(200).json({
-        success: true,
-        token: sesion.token,
-        message: "Autenticación correcta"
-      });
+    return res.status(200).json({
+  success: true,
+  token: sesion.token,
+  rol: sesion.rol,
+  message: "Autenticación correcta"
+});
     }
 
     return res.status(401).json({
