@@ -1,4 +1,4 @@
-// src/routes/informeRoutes.js
+﻿// src/routes/informeRoutes.js
 
 const express    = require('express');
 const router     = express.Router();
@@ -6,35 +6,24 @@ const {
   getDashboard,
   getEstadoCircuitos,
   getHistorial,
-  getDatosDashboard
+  getDatosDashboard,
+  getDatosAnalytics
 } = require('../controllers/informeController');
 
 router.get('/health', (req, res) => {
-  res.json({
-    servicio:  'pro ando el microservicio de informes-service',
-    estado:    'Seeeeeeeeeeeeeee',
-    timestamp: new Date().toISOString()
-  });
+  res.json({ servicio: 'informes-service', estado: 'ok', timestamp: new Date().toISOString() });
 });
 
 router.get('/dashboard', getDashboard);
 router.get('/circuitos', getEstadoCircuitos);
 router.get('/historial', getHistorial);
+router.get('/datos-analytics', getDatosAnalytics);
 
 router.post('/publicar-evento', async (req, res) => {
   try {
     const { publicarDatosImportados } = require('../events/publicador');
-    await publicarDatosImportados({
-      sucursal:  'Santiago Centro',
-      tipo:      'ventas',
-      periodo:   '2026-05',
-      registros: 150
-    });
-    res.json({ 
-      mensaje:  'Ejemplo de un Evento publicado en cola datos.importados',
-      cola:     'datos.importados',
-      receptor: 'kpi-service'
-    });
+    await publicarDatosImportados({ sucursal: 'Santiago Centro', tipo: 'ventas', periodo: '2026-05', registros: 150 });
+    res.json({ mensaje: 'Evento publicado', cola: 'datos.importados', receptor: 'kpi-service' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -44,45 +33,26 @@ router.get('/datos-dashboard', getDatosDashboard);
 
 router.get('/resumen-sistema', async (req, res) => {
   const conexion = require('../config/database');
-
-  const queryUsuarios = 'SELECT COUNT(*) as total FROM usuarios';
-  const queryImportaciones = 'SELECT COUNT(*) as total, SUM(registros) as registros_totales FROM importaciones';
-  const queryUltimas = `SELECT fuente, sucursal, registros, estado, created_at 
-    FROM importaciones ORDER BY created_at DESC LIMIT 5`;
-
-  conexion.query(queryUsuarios, (err, resUsuarios) => {
+  conexion.query('SELECT COUNT(*) as total FROM usuarios', (err, resUsuarios) => {
     if (err) return res.status(500).json({ error: err.message });
-    conexion.query(queryImportaciones, (err, resImportaciones) => {
+    conexion.query('SELECT COUNT(*) as total, SUM(registros) as registros_totales FROM importaciones', (err, resImportaciones) => {
       if (err) return res.status(500).json({ error: err.message });
-      conexion.query(queryUltimas, (err, resUltimas) => {
+      conexion.query('SELECT fuente, sucursal, registros, estado, created_at FROM importaciones ORDER BY created_at DESC LIMIT 5', (err, resUltimas) => {
         if (err) return res.status(500).json({ error: err.message });
-        res.json({
-          success: true,
-          totalUsuarios: resUsuarios[0].total,
-          totalImportaciones: resImportaciones[0].total,
-          registrosTotales: resImportaciones[0].registros_totales,
-          ultimasImportaciones: resUltimas
-        });
+        res.json({ success: true, totalUsuarios: resUsuarios[0].total, totalImportaciones: resImportaciones[0].total, registrosTotales: resImportaciones[0].registros_totales, ultimasImportaciones: resUltimas });
       });
     });
   });
 });
 
 // POST /api/informes/chat — Chatbot CORDI con datos reales de MySQL
-// POST /api/informes/chat — Chatbot CORDI con datos reales de MySQL
 router.post('/chat', async (req, res) => {
   try {
     const chatbotService  = require('../services/chatbotService');
     const contextoService = require('../services/contextoService');
     const { pregunta } = req.body;
-
-    if (!pregunta) {
-      return res.status(400).json({ success: false, error: 'Falta el campo pregunta' });
-    }
-
+    if (!pregunta) return res.status(400).json({ success: false, error: 'Falta el campo pregunta' });
     console.log('Pregunta recibida:', pregunta);
-
-    // Detectar año en la pregunta (ej: "ventas 2023", "resumen del 2024")
     const matchAnio = pregunta.match(/20\d{2}/);
     const filtros = matchAnio ? { año: matchAnio[0] } : {};
 
