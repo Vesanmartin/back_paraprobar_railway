@@ -3,6 +3,7 @@ import express from 'express';
 import { register, login, verifyCode } from '../controllers/auth.controller.js';
 import conexion from '../db.js';
 import { ContextoPermisos } from '../strategies/rolStrategy.js';
+import { forgotPassword} from "../controllers/auth.controller.js";
 
 const router = express.Router();
 
@@ -15,6 +16,9 @@ router.post('/register', register);
 // Login + 2FA
 router.post('/login', login);
 router.post('/verify-code', verifyCode);
+
+// Recuperación de contraseña
+router.post('/forgot-password', forgotPassword);
 
 // Obtener todos los usuarios
 router.get('/users', (req, res) => {

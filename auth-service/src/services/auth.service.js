@@ -46,5 +46,9 @@ export const loginUser = async (email, password) => {
   { expiresIn: '1h' }
 );
 
-  return token;
+return {
+  token,
+  rol: usuario.rol,
+  email: usuario.email
+};
 };
