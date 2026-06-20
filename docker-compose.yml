@@ -12,7 +12,11 @@ services:
       MYSQL_DATABASE: grupocordillera
     volumes:
       - mysql_data:/var/lib/mysql
+<<<<<<< HEAD
       - ./sql-init:/docker-entrypoint-initdb.d
+=======
+      - ./init-db:/docker-entrypoint-initdb.d
+>>>>>>> origin/natalie-dev
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pNenas.2120"]
       interval: 10s

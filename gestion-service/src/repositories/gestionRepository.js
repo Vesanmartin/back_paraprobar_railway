@@ -19,6 +19,16 @@ const SucursalRepository = {
     obtenerTodas: async () => {
         const [filas] = await db.query('SELECT * FROM sucursales');
         return filas;
+    },
+    crear: async ({ nombre, descripcion, direccion, region, estado }) => {
+        const [resultado] = await db.query(
+            'INSERT INTO sucursales (nombre, descripcion, direccion, region, estado) VALUES (?, ?, ?, ?, ?)',
+            [nombre, descripcion, direccion, region, estado || 'activo']
+        );
+        return { id: resultado.insertId, nombre, descripcion, direccion, region, estado: estado || 'activo' };
+    },
+    eliminar: async (id) => {
+        await db.query('DELETE FROM sucursales WHERE id = ?', [id]);
     }
 };
 
