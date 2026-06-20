@@ -2,11 +2,11 @@
 // Pruebas unitarias - KPI Service
 // Probamos el patrón Factory Method que implementamos para calcular KPIs
 // Usamos Jest para correr las pruebas
-// Ojo: estas pruebas no necesitan BD ni Docker corriendo
+// IMPORTANTE: estas pruebas no necesitan BD ni Docker corriendo
 
 const FabricaKPI = require('../patterns/kpiFactory');
 
-// PRUEBAS DE KPI FACTORY
+// PRUEBAS de factory method
 // Verificamos que el Factory crea bien los objetos según el tipo
 describe('FabricaKPI', () => {
 
@@ -31,7 +31,7 @@ describe('FabricaKPI', () => {
     expect(calculador).toBeDefined();
   });
 
-  // Si el tipo no existe, EL KPI Factory debe lanzar un error
+  // Si el tipo no existe, la fábrica debe lanzar un error
   test('crear() debe lanzar error si el tipo no existe', () => {
     expect(() => FabricaKPI.crear('desconocido')).toThrow('no existe');
   });
@@ -46,13 +46,13 @@ describe('FabricaKPI', () => {
   });
 });
 
-// PRUEBAS CALCULADOR DE VENTAS
+// PRUEBAS CALCULADOR VENTAS
 // Simulamos datos de ventas sin tocar la BD
 describe('CalculadorVentas', () => {
 
   const calculador = FabricaKPI.crear('ventas');
 
-  // OJO: Datos de prueba inventados, reemplazan los datos reales de MySQL
+  // Datos de prueba inventados, reemplazan los datos reales de MySQL
   const datosVentas = [
     { amount: 100000 },
     { amount: 200000 },
@@ -84,7 +84,7 @@ describe('CalculadorVentas', () => {
   });
 });
 
-// PRUEBAS CALCULADOR DE INVENTARIO
+// PRUEBAS CALCULADOR INVENTARIO
 describe('CalculadorInventario', () => {
 
   const calculador = FabricaKPI.crear('inventario');
@@ -143,14 +143,14 @@ describe('CalculadorRentabilidad', () => {
     expect(resultado.margen).toBe('40.00%');
   });
 
-  // Caso "XTREM": si no hay ingresos, no debe dividir por cero
+  // Caso borde: si no hay ingresos no debe dividir por cero
   test('debe retornar 0% de margen si no hay ingresos', () => {
     const resultado = calculador.calculate([{ revenue: 0, cost: 100 }]);
     expect(resultado.margen).toBe('0.00%');
   });
 });
 
-// PRUEBAS CALCULADOR DE TENDENCIAS
+// PRUEBAS CALCULADOR TENDENCIAS
 describe('CalculadorTendencias', () => {
 
   const calculador = FabricaKPI.crear('tendencias');

@@ -45,6 +45,7 @@ router.get('/resumen-sistema', async (req, res) => {
   });
 });
 
+// POST /api/informes/chat — Chatbot CORDI con datos reales de MySQL
 router.post('/chat', async (req, res) => {
   try {
     const chatbotService  = require('../services/chatbotService');
@@ -54,17 +55,22 @@ router.post('/chat', async (req, res) => {
     console.log('Pregunta recibida:', pregunta);
     const matchAnio = pregunta.match(/20\d{2}/);
     const filtros = matchAnio ? { año: matchAnio[0] } : {};
-    const datos = await contextoService.obtenerContexto(filtros);
+
+    // Obtenemos contexto y respuesta de Ollama
+    const datos = await contextoService.obtenerContexto(filtros, pregunta);
     const resultado = await chatbotService.responder(pregunta, datos);
+
+    // Agregamos datos estructurados para los gráficos del frontend
     res.json({
       ...resultado,
       datos_grafico: {
-        ventas_por_mes:      datos.ventas_erp           || [],
+        ventas_por_mes:      datos.ventas_erp          || [],
         ventas_por_sucursal: datos.ventas_por_sucursal  || [],
         top_productos:       datos.top_productos        || [],
         compras_por_mes:     datos.compras_erp          || []
       }
     });
+
   } catch (err) {
     console.error('Error en chat:', err.message);
     res.status(500).json({ success: false, error: err.message });
