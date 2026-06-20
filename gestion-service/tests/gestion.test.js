@@ -50,6 +50,54 @@ describe('SucursalRepository', () => {
 
         expect(resultado).toEqual([]);
     });
+
+    test('crear debe guardar una sucursal nueva correctamente', async () => {
+        const nuevaSucursal = {
+            nombre: 'Sucursal Centro',
+            descripcion: 'Sucursal principal',
+            direccion: 'Av. Principal 123',
+            region: 'Metropolitana',
+            estado: 'activo'
+        };
+
+        // Mock: simula que la BD inserta y devuelve el id generado
+        db.query.mockResolvedValue([{ insertId: 1 }]);
+
+        const resultado = await SucursalRepository.crear(nuevaSucursal);
+
+        expect(resultado).toEqual({ id: 1, ...nuevaSucursal });
+        expect(db.query).toHaveBeenCalledWith(
+            'INSERT INTO sucursales (nombre, descripcion, direccion, region, estado) VALUES (?, ?, ?, ?, ?)',
+            ['Sucursal Centro', 'Sucursal principal', 'Av. Principal 123', 'Metropolitana', 'activo']
+        );
+    });
+
+    test('crear debe usar "activo" como estado por defecto si no se especifica', async () => {
+        const sucursalSinEstado = {
+            nombre: 'Sucursal Norte',
+            descripcion: 'Sucursal secundaria',
+            direccion: 'Calle Norte 456',
+            region: 'Valparaíso'
+        };
+
+        db.query.mockResolvedValue([{ insertId: 2 }]);
+
+        const resultado = await SucursalRepository.crear(sucursalSinEstado);
+
+        expect(resultado.estado).toBe('activo');
+        expect(db.query).toHaveBeenCalledWith(
+            expect.any(String),
+            ['Sucursal Norte', 'Sucursal secundaria', 'Calle Norte 456', 'Valparaíso', 'activo']
+        );
+    });
+
+    test('eliminar debe eliminar una sucursal por id', async () => {
+        db.query.mockResolvedValue([{ affectedRows: 1 }]);
+
+        await SucursalRepository.eliminar(1);
+
+        expect(db.query).toHaveBeenCalledWith('DELETE FROM sucursales WHERE id = ?', [1]);
+    });
 });
 
 // =====================

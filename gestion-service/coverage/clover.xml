@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1781409566379" clover="3.2.0">
-  <project timestamp="1781409566379" name="All files">
-    <metrics statements="17" coveredstatements="14" conditionals="4" coveredconditionals="0" methods="6" coveredmethods="4" elements="27" coveredelements="18" complexity="0" loc="17" ncloc="17" packages="1" files="1" classes="1"/>
+<coverage generated="1781917180346" clover="3.2.0">
+  <project timestamp="1781917180346" name="All files">
+    <metrics statements="17" coveredstatements="17" conditionals="4" coveredconditionals="4" methods="6" coveredmethods="6" elements="27" coveredelements="27" complexity="0" loc="17" ncloc="17" packages="1" files="1" classes="1"/>
     <file name="gestionRepository.js" path="C:\Users\natal\Downloads\grupocordillera_nuevo\gestion-service\src\repositories\gestionRepository.js">
-      <metrics statements="17" coveredstatements="14" conditionals="4" coveredconditionals="0" methods="6" coveredmethods="4"/>
+      <metrics statements="17" coveredstatements="17" conditionals="4" coveredconditionals="4" methods="6" coveredmethods="6"/>
       <line num="6" count="1" type="stmt"/>
       <line num="9" count="1" type="stmt"/>
       <line num="12" count="2" type="stmt"/>
@@ -11,9 +11,9 @@
       <line num="18" count="1" type="stmt"/>
       <line num="20" count="2" type="stmt"/>
       <line num="21" count="2" type="stmt"/>
-      <line num="24" count="0" type="stmt"/>
-      <line num="28" count="0" type="cond" truecount="0" falsecount="2"/>
-      <line num="31" count="0" type="stmt"/>
+      <line num="24" count="2" type="stmt"/>
+      <line num="28" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="31" count="1" type="stmt"/>
       <line num="36" count="1" type="stmt"/>
       <line num="38" count="1" type="stmt"/>
       <line num="39" count="1" type="stmt"/>
