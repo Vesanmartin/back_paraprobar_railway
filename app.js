@@ -2,13 +2,13 @@
 const path = require('path');
 
 const servicios = [
-  { nombre: 'auth-service',       puerto: 3001 },
-  { nombre: 'kpi-service',        puerto: 3002 },
-  { nombre: 'importacion-service',puerto: 3005 },
-  { nombre: 'informes-service',   puerto: 3004 },
-  { nombre: 'gestion-service',    puerto: 3003 },
-  { nombre: 'bff',                puerto: 3006 },
-  { nombre: 'api-gateway',        puerto: null }
+  { nombre: 'auth-service',        puerto: 3001 },
+  { nombre: 'kpi-service',         puerto: 3002 },
+  { nombre: 'importacion-service', puerto: 3005 },
+  { nombre: 'informes-service',    puerto: 3004 },
+  { nombre: 'gestion-service',     puerto: 3003 },
+  { nombre: 'bff',                 puerto: 3006 },
+  { nombre: 'api-gateway',         puerto: null }
 ];
 
 servicios.forEach(({ nombre }) => {
@@ -25,7 +25,16 @@ servicios.forEach(({ nombre }) => {
 
 servicios.forEach(({ nombre, puerto }) => {
   console.log(`Iniciando ${nombre}...`);
-  const env = { ...process.env };
+  const env = {
+    ...process.env,
+    AUTH_SERVICE_URL:       'http://localhost:3001',
+    KPI_SERVICE_URL:        'http://localhost:3002',
+    GESTION_SERVICE_URL:    'http://localhost:3003',
+    INFORMES_SERVICE_URL:   'http://localhost:3004',
+    IMPORTACION_SERVICE_URL:'http://localhost:3005',
+    BFF_URL:                'http://localhost:3006',
+    RABBITMQ_URL:           'amqp://localhost'
+  };
   if (puerto) env.PORT = String(puerto);
 
   const proc = spawn('npm', ['start'], {
