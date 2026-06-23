@@ -16,42 +16,26 @@ export const register = async (req, res) => {
   }
 };
 
-// LOGIN + 2FA
+/// LOGIN sin 2FA (Railway demo)
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    const resultado = await loginUser(email, password);
 
-    // Validar usuario y obtener token
-   const resultado = await loginUser(email, password);
-
-const codigoTemporal = Math.floor(
-  100000 + Math.random() * 900000
-).toString();
-
-sesionesTemporales.set(email, {
-  token: resultado.token,
-  rol: resultado.rol,
-  codigoTemporal
-  
-});
-console.log("LOGIN RECIBIDO:", email);
-console.log("CODIGO GENERADO:", codigoTemporal);
-console.log("SESION:", sesionesTemporales.get(email));
     return res.status(200).json({
       success: true,
-      twoFactor: true,
-      message: "Código enviado a su correo"
+      token: resultado.token,
+      rol: resultado.rol,
+      message: "Autenticación correcta"
     });
   } catch (error) {
-  console.error("Error login:", error);
-
-  return res.status(401).json({
-    success: false,
-    error: error.message
-  });
-}
+    console.error("Error login:", error);
+    return res.status(401).json({
+      success: false,
+      error: error.message
+    });
+  }
 };
-
 // VERIFICAR CÓDIGO 2FA
 export const verifyCode = async (req, res) => {
   try {
