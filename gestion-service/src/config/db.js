@@ -1,17 +1,11 @@
 //src/config/db.js
-
-//Acá usamos createPool para manejar múltiples conexiones a la base de datos de manera eficiente.
-
-const mysql=require('mysql2');
-
-const conexion=mysql.createPool({
-    host: process.env.DB_HOST || 'mysql',
-    user:'root',
-    password:'Nenas.2120',
-    database:'grupocordillera',
+const mysql = require('mysql2');
+const conexion = mysql.createPool({
+    host:               process.env.DB_HOST,
+    user:               process.env.DB_USER,
+    password:           process.env.DB_PASSWORD,
+    database:           process.env.DB_NAME,
     waitForConnections: true,
-    connectionLimit: 10,
-
+    connectionLimit:    10,
 });
-
-module.exports=conexion.promise();
+module.exports = conexion.promise();

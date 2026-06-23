@@ -1,5 +1,6 @@
 // src/services/chatbotService.js
-const OLLAMA_URL = 'http://host.docker.internal:11434/api/chat';
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'; // CAMBIO railway - URL de la API de Groq para chat completions
+const GROQ_API_KEY = process.env.GROQ_API_KEY;                       // CAMBIO - desde variable de entorno para railway
 const TIMEOUT_MS = 300000;
 
 class ServicioChatbot {
@@ -8,7 +9,7 @@ class ServicioChatbot {
     try {
       const contexto = this._construirContexto(datos);
 
-      console.log('=== CONTEXTO ENVIADO A OLLAMA ===');
+      console.log('=== CONTEXTO ENVIADO A GROQ ===');
       console.log(contexto);
       console.log('================================');
 
@@ -17,12 +18,15 @@ class ServicioChatbot {
 
       let respuesta;
       try {
-        respuesta = await fetch(OLLAMA_URL, {
+        respuesta = await fetch(GROQ_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${GROQ_API_KEY}` // CAMBIO - Groq requiere autenticación
+          },
           signal: controlador.signal,
           body: JSON.stringify({
-            model: 'llama3.2',
+            model: 'llama-3.2-11b-text-preview', // CAMBIO - nombre del modelo en Groq
             stream: false,
             messages: [
               {
@@ -50,7 +54,8 @@ ${contexto}`
       }
 
       if (!respuesta.ok) {
-        throw new Error(`Ollama respondió con status ${respuesta.status}`);
+        const errorBody = await respuesta.text();
+        throw new Error(`Groq respondió con status ${respuesta.status}: ${errorBody}`);
       }
 
       const resultado = await respuesta.json();
@@ -58,8 +63,8 @@ ${contexto}`
       return {
         success:   true,
         pregunta,
-        respuesta: resultado.message.content,
-        modelo:    'llama3.2'
+        respuesta: resultado.choices[0].message.content, // CAMBIO - formato OpenAI
+        modelo:    'llama-3.2-11b-text-preview'           // CAMBIO
       };
 
     } catch (error) {
@@ -68,6 +73,7 @@ ${contexto}`
     }
   }
 
+  // _construirContexto no cambia nada — está perfecto
   _construirContexto(datos) {
     if (!datos || Object.keys(datos).length === 0) {
       return 'No hay datos disponibles.';
