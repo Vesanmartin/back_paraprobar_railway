@@ -2,37 +2,41 @@
 const path = require('path');
 
 const servicios = [
-  'auth-service',
-  'kpi-service',
-  'importacion-service',
-  'informes-service',
-  'gestion-service',
-  'bff',
-  'api-gateway'
+  { nombre: 'auth-service',       puerto: 3001 },
+  { nombre: 'kpi-service',        puerto: 3002 },
+  { nombre: 'importacion-service',puerto: 3005 },
+  { nombre: 'informes-service',   puerto: 3004 },
+  { nombre: 'gestion-service',    puerto: 3003 },
+  { nombre: 'bff',                puerto: 3006 },
+  { nombre: 'api-gateway',        puerto: null }
 ];
 
-servicios.forEach(servicio => {
-  console.log(`Instalando dependencias de ${servicio}...`);
+servicios.forEach(({ nombre }) => {
+  console.log(`Instalando dependencias de ${nombre}...`);
   try {
     execSync('npm install', {
-      cwd: path.join(__dirname, servicio),
+      cwd: path.join(__dirname, nombre),
       stdio: 'inherit'
     });
   } catch (err) {
-    console.error(`Error instalando ${servicio}:`, err.message);
+    console.error(`Error instalando ${nombre}:`, err.message);
   }
 });
 
-servicios.forEach(servicio => {
-  console.log(`Iniciando ${servicio}...`);
+servicios.forEach(({ nombre, puerto }) => {
+  console.log(`Iniciando ${nombre}...`);
+  const env = { ...process.env };
+  if (puerto) env.PORT = String(puerto);
+
   const proc = spawn('npm', ['start'], {
-    cwd: path.join(__dirname, servicio),
+    cwd: path.join(__dirname, nombre),
     stdio: 'inherit',
-    shell: true
+    shell: true,
+    env
   });
 
   proc.on('error', (err) => {
-    console.error(`Error en ${servicio}:`, err.message);
+    console.error(`Error en ${nombre}:`, err.message);
   });
 });
 
